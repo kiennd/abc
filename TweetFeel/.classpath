@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry kind="lib" path="lib/twitter4j-async-3.0.5.jar"/>
+	<classpathentry kind="lib" path="lib/twitter4j-core-3.0.5.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="http://twitter4j.org/javadoc/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/twitter4j-examples-3.0.5.jar"/>
+	<classpathentry kind="lib" path="lib/twitter4j-media-support-3.0.5.jar"/>
+	<classpathentry kind="lib" path="lib/twitter4j-stream-3.0.5.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="http://twitter4j.org/javadoc/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/gtranslateapi-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/tag/commons-cli-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/tag/edu.stanford.nlp.tagger-2.0.jar"/>
+	<classpathentry kind="lib" path="lib/tag/gnujaxp.jar"/>
+	<classpathentry kind="lib" path="lib/tag/iText-2.1.5.jar"/>
+	<classpathentry kind="lib" path="lib/tag/jcommon-1.0.17.jar"/>
+	<classpathentry kind="lib" path="lib/tag/json-org.jar"/>
+	<classpathentry kind="lib" path="lib/tag/junit.jar"/>
+	<classpathentry kind="lib" path="lib/tag/swtgraphics2d.jar"/>
+	<classpathentry kind="lib" path="lib/tag/vn.hus.nlp.fsm-1.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/tag/vn.hus.nlp.sd-2.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/tag/vn.hus.nlp.tagger-4.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/tag/vn.hus.nlp.tokenizer-4.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/tag/vn.hus.nlp.utils-1.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/tag/xom-1.2.8.jar"/>
+	<classpathentry kind="lib" path="lib/json-org.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

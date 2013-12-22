@@ -9,6 +9,23 @@ public class KWord implements Serializable{
 	private static final long serialVersionUID = -1993459343275748047L;
 	private String word,type;
 	private int countneg,countpos;
+	private int total; // sum of countneg and countpos
+	private String label;
+	
+	
+	
+	public String getLabel() {
+		return label;
+	}
+	public void setLabel(String label) {
+		this.label = label;
+	}
+	public int getTotal() {
+		return total;
+	}
+	public void setTotal(int total) {
+		this.total = total;
+	}
 	public String getWord() {
 		return word;
 	}

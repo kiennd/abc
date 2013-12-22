@@ -13,11 +13,27 @@ public class KConstant {
 	public static String ACTION_COMMAND_SAVE_LEARN_DATA = "SAVELEARNDATA";
 	public static String ACTION_COMMAND_IMPORT_LEARN_DATA_FROM_TXT = "import learn from txt";
 	public static String ACTION_COMMAND_REBUILD_WORDLIB = "rebuild word lib";
+	public static String ACTION_COMMAND_SEARCH_LIB = "search in lib";
+	public static String ACTION_COMMAND_SAVE_UNLABEL_WORD = "SAVE UNLABEL WORD";
+	public static String ACTION_COMMAND_DECISION_SELECTED = "RADIO BUTTON DECISION SELECTED";
+	public static String ACTION_COMMAND_NON_DECISION_SELECTED = "RADIOBUTTON NON DECISION SELECTED";
+	public static String ACTION_COMMAND_UNLABEL_SELECTED = "RADIOBUTTON UNLABEL SELECTED";
+	
+	
+	public static String DECISION_LABEL = "DECISION";
+	public static String NON_DECISION_LABEL = "NON-DECISION";
+	public static String UNLABEL = "UNLABEL";
+	
+	
 	
 	
 	public static String LANGUAGE_VIETNAM = "vi";
 	public static String LANGUAGE_ENGLISH = "en";
 	public static String LEARN_DATA_FILE_NAME = "learnData.lib";
-	public static String WORD_LIB_FILE_NAME = "words.lib";
+	public static String UNLABEL_WORD_LIB_FILE_NAME = "unlabelWords.lib";
+	public static String DECISION_WORD_LIB_FILE_NAME = "decisionWords.lib";
+	public static String NONDECISION_WORD_LIB_FILE_NAME = "nonDecisionWords.lib";
+	
+	
 	
 }

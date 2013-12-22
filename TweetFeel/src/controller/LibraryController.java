@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.Box.Filler;
 import javax.swing.JFileChooser;
 import javax.xml.stream.events.Comment;
 
@@ -22,7 +23,11 @@ import edu.stanford.nlp.ling.WordTag;
 public class LibraryController {
 	LibraryView libraryView;
 	private Vector<KComment> comments;
-	private Vector<KWord> wordlib;
+	private Vector<KWord> unlabelWordLib;
+	private Vector<KWord> decisionWordLib;
+	private Vector<KWord> nondecisionWordLib;
+	
+	private String currentRadioSelected;
 
 	public void initLibraryView(LibraryView view) {
 //		rebuildWordLib();
@@ -31,8 +36,16 @@ public class LibraryController {
 		view.addButtonActionListener(new ButtonActionListener());
 		comments = FileReadWriter.readLearnData();
 		this.libraryView.setTblLearnData(comments);
-		wordlib = FileReadWriter.readWordLib();
-		libraryView.setTblWords(wordlib);
+		unlabelWordLib = FileReadWriter.readUnlabelWordLib();
+		decisionWordLib = FileReadWriter.readDecisionWordLib();
+		nondecisionWordLib = FileReadWriter.readNonDecisionWordLib();
+		
+		
+		libraryView.setTblWords(unlabelWordLib);
+		libraryView.addRadioButtonActionListener(new RadioButtonActionListener());
+		currentRadioSelected = KConstant.UNLABEL;
+		libraryView.setUnlabelSelected();
+		
 	}
 
 	/*
@@ -43,9 +56,11 @@ public class LibraryController {
 	 * Interjection 15. T - Auxiliary, modal words 16. Y - Abbreviation 17. Z -
 	 * Bound morphemes 18. X - Unknown
 	 */
-	public Vector<KWord> rebuildWordLib() {
+	public void rebuildWordLib() {
+		resetCount(unlabelWordLib);
+		resetCount(decisionWordLib);
+		resetCount(nondecisionWordLib);
 		Vector<KComment> comments;
-		Vector<KWord> words = new Vector<>();
 		comments = FileReadWriter.readLearnData();
 		for (KComment comment : comments) {
 			String str = comment.getContent();
@@ -60,24 +75,30 @@ public class LibraryController {
 					KWord newWord = new KWord();
 					newWord.setWord(word);
 					newWord.setType(tag);
-					addWord(newWord, words, comment.getStatus());
+					boolean isExisted = false;
+					isExisted = checkExist(newWord, decisionWordLib, comment.getStatus());
+					if(!isExisted){
+						isExisted = checkExist(newWord, nondecisionWordLib, comment.getStatus());
+					}
+					if(!isExisted){
+						 addNewWord(newWord, unlabelWordLib, comment.getStatus());
+					}
 				}
 
 			}
 
 		}
+		saveData();
 
-		FileReadWriter.objectToFile(KConstant.WORD_LIB_FILE_NAME, words);
-		return words;
 	}
-
-	private void addWord(KWord word, Vector<KWord> words, int status) {
+	
+	private void addNewWord(KWord word, Vector<KWord> words, int status){
 		for (KWord kWord : words) {
-			if (word.getWord().equals(kWord.getWord())) {
+			if (word.getWord().equalsIgnoreCase(kWord.getWord())) {
 				if (status == 1) {
 					kWord.increasePos();
 				} else {
-					kWord.increasePos();
+					kWord.increaseNeg();;
 				}
 				return;
 			}
@@ -90,7 +111,56 @@ public class LibraryController {
 			word.setCountpos(0);
 			word.setCountneg(1);
 		}
+		word.setLabel(KConstant.UNLABEL);
 		words.add(word);
+	}
+	private boolean checkExist(KWord word, Vector<KWord> words, int status) {
+		for (KWord kWord : words) {
+			if (word.getWord().equalsIgnoreCase(kWord.getWord())) {
+				
+				if (status == 1) {
+					kWord.increasePos();
+				} else {
+					kWord.increaseNeg();;
+				}
+				return true;
+			}
+
+		}
+		return false;
+	}
+	
+	private void resetCount(Vector<KWord> words){
+		for (KWord kWord : words) {
+			kWord.setCountneg(0);
+			kWord.setCountpos(0);
+		}
+	}
+	
+	public class RadioButtonActionListener implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			System.out.println(e.getActionCommand());
+			if(e.getActionCommand().equals(KConstant.ACTION_COMMAND_UNLABEL_SELECTED)){
+				currentRadioSelected = KConstant.UNLABEL;
+			}
+			
+			if(e.getActionCommand().equals(KConstant.ACTION_COMMAND_DECISION_SELECTED)){
+				currentRadioSelected = KConstant.DECISION_LABEL;
+				
+					
+			}
+			
+			if(e.getActionCommand().equals(KConstant.ACTION_COMMAND_NON_DECISION_SELECTED)){
+				currentRadioSelected = KConstant.NON_DECISION_LABEL;				
+			}
+			reloadTblWord(currentRadioSelected);
+			
+			
+			
+		}
+		
 	}
 
 	public class ButtonActionListener implements ActionListener {
@@ -118,10 +188,89 @@ public class LibraryController {
 			}
 			
 			if(e.getActionCommand().equals(KConstant.ACTION_COMMAND_REBUILD_WORDLIB)){
-				libraryView.setTblWords(rebuildWordLib());
+				rebuildWordLib();
 			}
+			
+			if(e.getActionCommand().equals(KConstant.ACTION_COMMAND_SEARCH_LIB)){
+				String keyword = libraryView.getKeyword().toLowerCase();
+				
+				Vector<KWord> wordsResult = new Vector<>();
+				Vector<KComment> commentResult = new Vector<>();
+				for (KWord kWord : unlabelWordLib) {
+					if(kWord.getWord().toLowerCase().contains(keyword)){
+						wordsResult.add(kWord);
+					}
+				}
+				libraryView.setTblWords(wordsResult);
+				
+				for (KComment comment : comments) {
+					if(comment.getContent().toLowerCase().contains(keyword)){
+						commentResult.add(comment);
+					}
+				}
+				libraryView.setTblLearnData(commentResult);
+			}
+			
+			if(e.getActionCommand().equals(KConstant.ACTION_COMMAND_SAVE_UNLABEL_WORD)){
+				Vector<KWord> wordsChanged = libraryView.getWordChanged(currentRadioSelected);
+				
+				for (KWord kWord : wordsChanged) {
+					Vector<KWord> newLib = getWordLib(kWord.getLabel());
+					Vector<KWord> oldLib = getWordLib(currentRadioSelected); 
+					
+					changeLabel(oldLib, newLib, kWord);
+				}		
+				saveData();
+			}
+			
 		}
 
+	}
+	
+	public void saveData(){
+		FileReadWriter.objectToFile(KConstant.UNLABEL_WORD_LIB_FILE_NAME, unlabelWordLib);
+		FileReadWriter.objectToFile(KConstant.DECISION_WORD_LIB_FILE_NAME, decisionWordLib);
+		FileReadWriter.objectToFile(KConstant.NONDECISION_WORD_LIB_FILE_NAME, nondecisionWordLib);
+		reloadTblWord(currentRadioSelected);
+	}
+	
+	public void reloadTblWord(String label){
+		if(label.equals(KConstant.UNLABEL)){
+			libraryView.setTblWords(unlabelWordLib);
+			return;
+		}
+		if(label.equals(KConstant.DECISION_LABEL)){
+			libraryView.setTblWords(decisionWordLib);
+			return;
+		}
+		if(label.equals(KConstant.NON_DECISION_LABEL)){
+			libraryView.setTblWords(nondecisionWordLib);
+			return;
+		}
+	}
+	
+	public Vector<KWord> getWordLib(String label){
+		if(label.equals(KConstant.UNLABEL)){
+			return unlabelWordLib;
+		}
+		if(label.equals(KConstant.DECISION_LABEL)){
+			return  decisionWordLib;
+		}
+		if(label.equals(KConstant.NON_DECISION_LABEL)){
+			return  nondecisionWordLib;
+		}
+		
+		return new Vector<>();
+	}
+	
+	public void changeLabel(Vector<KWord> oldLib, Vector<KWord> newLib, KWord wordChanged ){
+		for (KWord kWord : oldLib) {
+			if(kWord.getWord().equalsIgnoreCase(wordChanged.getWord())){
+				oldLib.removeElement(kWord);
+				break;
+			}
+		}
+		newLib.addElement(wordChanged);
 	}
 
 	public static void main(String[] args) {

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Vector;
 
 import model.KComment;
+import model.KWord;
 import model.SearchInfo;
 import twitter4j.FilterQuery;
 import twitter4j.Query;
@@ -231,6 +232,7 @@ public class TweetFeelController {
 			if(e.getActionCommand().equals(KConstant.ACTION_COMMAND_VIEW_LIB)){
 				new LibraryController().initLibraryView(new LibraryView());
 			}
+			
 		}
 	}
 	

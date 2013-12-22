@@ -88,13 +88,32 @@ public class FileReadWriter {
     	return new Vector<>();
     }
     
-    public static Vector<KWord> readWordLib(){
-    	Vector<KWord> words = (Vector<KWord>) fileToObject(KConstant.WORD_LIB_FILE_NAME);
+    public static Vector<KWord> readUnlabelWordLib(){
+    	Vector<KWord> words = (Vector<KWord>) fileToObject(KConstant.UNLABEL_WORD_LIB_FILE_NAME);
     	if(words!=null){
     		return words;
     	}
     	return new Vector<>();
     }
+    
+    public static Vector<KWord> readDecisionWordLib(){
+    	Vector<KWord> words = (Vector<KWord>) fileToObject(KConstant.DECISION_WORD_LIB_FILE_NAME);
+    	if(words!=null){
+    		return words;
+    	}
+    	return new Vector<>();
+    }
+    
+    public static Vector<KWord> readNonDecisionWordLib(){
+    	Vector<KWord> words = (Vector<KWord>) fileToObject(KConstant.NONDECISION_WORD_LIB_FILE_NAME);
+    	if(words!=null){
+    		return words;
+    	}
+    	return new Vector<>();
+    }
+
+   
+    
     public static Vector<KComment> textToLearnData(String fileName){
     	Vector<KComment> comments = new Vector<>();
     	String[] stringData;

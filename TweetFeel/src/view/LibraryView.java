@@ -2,35 +2,42 @@ package view;
 
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
 
+import javax.swing.ButtonGroup;
+import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 
-import constant.KConstant;
 import model.KComment;
 import model.KWord;
+import constant.KConstant;
 
 public class LibraryView extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField textField;
+	private JTextField txtKeyword;
 	private JTable tblLearnData;
 	private JTable tblWords;
 	private JTable tblAbbreviation;
 	private DefaultTableModel learnDataModel;
-	private DefaultTableModel wordsModel;
+	private DefaultTableModel wordTblModel;
 	
-	private JButton btnSaveLearn,btnImportFromtxt,btnRebuildData;
+	private JButton btnSaveLearn,btnImportFromtxt,btnRebuildData,btnSearch,btnsaveUnlabel;
+	private JRadioButton rdbtnDecision,rdbtnNonDecision,rdbtnUnlabel;
 	/**
 	 * Launch the application.
 	 */
@@ -52,19 +59,23 @@ public class LibraryView extends JFrame {
 	 */
 	public LibraryView() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 631, 442);
+		setBounds(100, 100, 778, 445);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		textField = new JTextField();
-		textField.setBounds(64, 76, 343, 28);
-		contentPane.add(textField);
-		textField.setColumns(10);
+		txtKeyword = new JTextField();
+		txtKeyword.setBounds(103, 76, 451, 28);
+		contentPane.add(txtKeyword);
+		txtKeyword.setColumns(10);
 		
-		JButton btnSearch = new JButton("Search");
-		btnSearch.setBounds(417, 77, 117, 29);
+		btnSearch = new JButton("Search");
+		btnSearch.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnSearch.setBounds(582, 77, 117, 29);
 		contentPane.add(btnSearch);
 		
 		JLabel lblLibrary = new JLabel("Library");
@@ -73,15 +84,15 @@ public class LibraryView extends JFrame {
 		contentPane.add(lblLibrary);
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(38, 122, 560, 278);
+		tabbedPane.setBounds(38, 122, 721, 268);
 		contentPane.add(tabbedPane);
-		
+		// tab1
 		JPanel learnDataPanel = new JPanel();
 		tabbedPane.addTab("Learn Data", null, learnDataPanel, null);
 		learnDataPanel.setLayout(null);
 		
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(16, 6, 499, 173);
+		scrollPane.setBounds(16, 6, 661, 178);
 		learnDataPanel.add(scrollPane);
 		
 		Vector<String>learnDataColumnNames = new Vector<>();
@@ -105,13 +116,10 @@ public class LibraryView extends JFrame {
 		btnImportFromtxt.setBounds(92, 191, 141, 29);
 		learnDataPanel.add(btnImportFromtxt);
 		
-		JPanel wordLibPanel = new JPanel();
-		tabbedPane.addTab("Word Lib", null, wordLibPanel, null);
-		wordLibPanel.setLayout(null);
 		
-		JScrollPane scrollPane_2 = new JScrollPane();
-		scrollPane_2.setBounds(18, 6, 503, 183);
-		wordLibPanel.add(scrollPane_2);
+		// tab2
+		JPanel unlabelWordPanel = new JPanel();
+		tabbedPane.addTab("Unlabel words", null, unlabelWordPanel, null);
 		
 		Vector<String> tblWordColumnNames = new Vector<>();
 		tblWordColumnNames.add("id");
@@ -119,22 +127,29 @@ public class LibraryView extends JFrame {
 		tblWordColumnNames.add("Type");
 		tblWordColumnNames.add("Pos count");
 		tblWordColumnNames.add("Neg count");
+		tblWordColumnNames.add("Label");
 		
-		wordsModel = new DefaultTableModel(tblWordColumnNames, 0);
-		
+		wordTblModel = new DefaultTableModel(tblWordColumnNames, 0);
 		tblWords = new JTable();
-		tblWords.setModel(wordsModel);
-		tblWords.getColumnModel().getColumn(0).setMaxWidth(60);
-		tblWords.getColumnModel().getColumn(2).setMaxWidth(80);
-		tblWords.getColumnModel().getColumn(3).setMaxWidth(80);
-		tblWords.getColumnModel().getColumn(4).setMaxWidth(80);
+		tblWords.setModel(wordTblModel);
+		initTblWord(tblWords.getColumnModel());
+		
+		btnRebuildData = new JButton("Rebuild data");
+		btnRebuildData.setBounds(24, 187, 117, 29);
+		btnRebuildData.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		unlabelWordPanel.setLayout(null);
+		unlabelWordPanel.add(btnRebuildData);
+		JScrollPane scrollPane_2 = new JScrollPane();
+		scrollPane_2.setBounds(24, 11, 656, 174);
+		unlabelWordPanel.add(scrollPane_2);
+		
 		
 		scrollPane_2.setViewportView(tblWords);
 		
-		 btnRebuildData = new JButton("Rebuild data");
-		btnRebuildData.setBounds(17, 197, 117, 29);
-		wordLibPanel.add(btnRebuildData);
-		
+		//tab 5
 		JPanel abbreviationPanel = new JPanel();
 		tabbedPane.addTab("Abbreviation lib", null, abbreviationPanel, null);
 		abbreviationPanel.setLayout(null);
@@ -147,8 +162,48 @@ public class LibraryView extends JFrame {
 		btnSave_1.setBounds(18, 189, 75, 29);
 		abbreviationPanel.add(btnSave_1);
 		
+		//tab 6
 		JPanel statisticsPanel = new JPanel();
 		tabbedPane.addTab("Statistics", null, statisticsPanel, null);
+		
+		btnsaveUnlabel = new JButton("Save");
+		btnsaveUnlabel.setBounds(144, 187, 117, 29);
+		unlabelWordPanel.add(btnsaveUnlabel);
+		
+		rdbtnDecision = new JRadioButton("Decision words");
+		rdbtnDecision.setBounds(399, 188, 141, 23);
+		unlabelWordPanel.add(rdbtnDecision);
+		
+		 rdbtnNonDecision = new JRadioButton("Non-Decision words");
+		rdbtnNonDecision.setBounds(527, 188, 167, 23);
+		unlabelWordPanel.add(rdbtnNonDecision);
+		
+		 rdbtnUnlabel = new JRadioButton("Unlabel");
+		rdbtnUnlabel.setBounds(298, 188, 91, 23);
+		unlabelWordPanel.add(rdbtnUnlabel);
+		
+		ButtonGroup bg = new ButtonGroup();
+		bg.add(rdbtnUnlabel);
+		bg.add(rdbtnNonDecision);
+		bg.add(rdbtnDecision);
+		
+	}
+	
+	public void initTblWord(TableColumnModel columnModel){
+		columnModel.getColumn(0).setMaxWidth(60);
+		columnModel.getColumn(1).setMaxWidth(400);
+		
+		columnModel.getColumn(2).setMaxWidth(80);
+		columnModel.getColumn(3).setMaxWidth(80);
+		columnModel.getColumn(4).setMaxWidth(80);
+		columnModel.getColumn(5).setMaxWidth(200);
+		
+		JComboBox<String> comboLabel = new JComboBox<>();
+		comboLabel.addItem(KConstant.UNLABEL);
+		comboLabel.addItem(KConstant.DECISION_LABEL);
+		comboLabel.addItem(KConstant.NON_DECISION_LABEL);
+		columnModel.getColumn(5).setCellEditor(new DefaultCellEditor(comboLabel));
+		
 	}
 	
 	public void setTblLearnData(Vector<KComment> kstatuses){
@@ -167,17 +222,18 @@ public class LibraryView extends JFrame {
 	}
 	
 	public void setTblWords(Vector<KWord> words){
-		while(wordsModel.getRowCount()>0){
-			wordsModel.removeRow(0);
+		while(wordTblModel.getRowCount()>0){
+			wordTblModel.removeRow(0);
 		}
 		for (KWord word : words) {
 			Vector<String> rowElements = new Vector<>();
-			rowElements.addElement(wordsModel.getRowCount()+1+"");
+			rowElements.addElement(wordTblModel.getRowCount()+1+"");
 			rowElements.addElement(word.getWord());
 			rowElements.addElement(word.getType());
 			rowElements.addElement(word.getCountpos()+"");
 			rowElements.addElement(word.getCountneg()+"");
-			wordsModel.addRow(rowElements);
+			rowElements.addElement(word.getLabel());
+			wordTblModel.addRow(rowElements);
 		}
 	}
 	
@@ -193,6 +249,22 @@ public class LibraryView extends JFrame {
 		this.btnRebuildData.setActionCommand(KConstant.ACTION_COMMAND_REBUILD_WORDLIB);
 		this.btnRebuildData.addActionListener(act);
 		
+		this.btnSearch.setActionCommand(KConstant.ACTION_COMMAND_SEARCH_LIB);
+		this.btnSearch.addActionListener(act);
+		
+		this.btnsaveUnlabel.setActionCommand(KConstant.ACTION_COMMAND_SAVE_UNLABEL_WORD);
+		this.btnsaveUnlabel.addActionListener(act);
+	}
+	
+	public void addRadioButtonActionListener(ActionListener act){
+		this.rdbtnDecision.setActionCommand(KConstant.ACTION_COMMAND_DECISION_SELECTED);
+		this.rdbtnDecision.addActionListener(act);
+		
+		this.rdbtnNonDecision.setActionCommand(KConstant.ACTION_COMMAND_NON_DECISION_SELECTED);
+		this.rdbtnNonDecision.addActionListener(act);
+		
+		this.rdbtnUnlabel.setActionCommand(KConstant.ACTION_COMMAND_UNLABEL_SELECTED);
+		this.rdbtnUnlabel.addActionListener(act);
 	}
 	
 	public Vector<KComment> getLearnData(){
@@ -213,4 +285,44 @@ public class LibraryView extends JFrame {
 		return comments;
 	}
 	
+	public Vector<KWord> getWordsData(){
+		Vector<KWord> words = new Vector<>();
+		for (int i = 0; i < wordTblModel.getRowCount(); i++) {
+			words.addElement(rowToWord(i));
+		}
+		return words;
+	}
+	
+	public Vector<KWord> getWordChanged(String currentRadio){
+		Vector<KWord> words = new Vector<>();
+		for (int i = 0; i < wordTblModel.getRowCount(); i++) {
+			if(!wordTblModel.getValueAt(i, 5).equals(currentRadio)){				
+				words.addElement(rowToWord(i));
+			}
+		}
+		return words;
+	}
+	
+	public KWord rowToWord(int i){
+		String word = (String) wordTblModel.getValueAt(i, 1);
+		String type = (String) wordTblModel.getValueAt(i, 2);
+		String pos = (String) wordTblModel.getValueAt(i, 3);
+		String neg = (String) wordTblModel.getValueAt(i, 4);
+		String label = (String) wordTblModel.getValueAt(i, 5);
+		KWord kword =  new KWord();
+		kword.setWord(word);
+		kword.setType(type);
+		kword.setCountpos(Integer.parseInt(pos));
+		kword.setCountneg(Integer.parseInt(neg));
+		kword.setLabel(label);
+		return kword;
+	}
+	
+	public void setUnlabelSelected(){
+		this.rdbtnUnlabel.setSelected(true);
+	}
+	
+	public String getKeyword(){
+		return this.txtKeyword.getText();
+	}
 }

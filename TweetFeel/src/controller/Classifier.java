@@ -16,7 +16,7 @@ public class Classifier {
 	private Vector<KWord> wordlib;
 
 	public Classifier() {
-		this.wordlib = FileReadWriter.readUnlabelWordLib();
+		this.wordlib = FileReadWriter.readDecisionWordLib();
 		
 		
 	}
@@ -43,10 +43,10 @@ public class Classifier {
 			
 			if(posfinalWeight > 0){
 				result += posfinalWeight*count;
-				result += (posWeight-1)*count2;
+				result -= posfinalWeight*count2;
 			}else{
-				result += posWeight*count;
-				result += (posWeight+1)*count2;
+				result += posfinalWeight*count;
+				result += (posfinalWeight+1)*count2;
 			}
 			System.out.println(count +" "+ count2+ " "+ kword.getWord()+" "+posfinalWeight);
 		}
@@ -146,7 +146,7 @@ public class Classifier {
 	public static void main(String[] args) {
 		
 		System.out.println(new Classifier().classifiSentence(""
-				+ "Mỗi lần sạc sẽ cho khả năng phát nhạc 5 tiếng liên tục – một con số khá hợp lý với chiếc loa công suất 1,2 Watt"));
+				+ "Lại bị treo máy rồi, chán quá"));
 	}
 
 }

@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
+import java.util.jar.Attributes.Name;
 
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultCellEditor;
@@ -22,6 +23,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
+import model.AbbreviationWord;
 import model.KComment;
 import model.KWord;
 import constant.KConstant;
@@ -35,9 +37,11 @@ public class LibraryView extends JFrame {
 	private JTable tblAbbreviation;
 	private DefaultTableModel learnDataModel;
 	private DefaultTableModel wordTblModel;
+	private DefaultTableModel abbreviationModel;
 	
-	private JButton btnSaveLearn,btnImportFromtxt,btnRebuildData,btnSearch,btnsaveUnlabel;
+	private JButton btnSaveLearn,btnImportFromtxt,btnRebuildData,btnSearch,btnsaveUnlabel,btnSaveAbbreviation,btnAddAbbreviation,btnRemoveAbbreviation;
 	private JRadioButton rdbtnDecision,rdbtnNonDecision,rdbtnUnlabel;
+	private JScrollPane scrollPane_1;
 	/**
 	 * Launch the application.
 	 */
@@ -58,7 +62,6 @@ public class LibraryView extends JFrame {
 	 * Create the frame.
 	 */
 	public LibraryView() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 778, 445);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -136,10 +139,7 @@ public class LibraryView extends JFrame {
 		
 		btnRebuildData = new JButton("Rebuild data");
 		btnRebuildData.setBounds(24, 187, 117, 29);
-		btnRebuildData.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
+	
 		unlabelWordPanel.setLayout(null);
 		unlabelWordPanel.add(btnRebuildData);
 		JScrollPane scrollPane_2 = new JScrollPane();
@@ -154,13 +154,31 @@ public class LibraryView extends JFrame {
 		tabbedPane.addTab("Abbreviation lib", null, abbreviationPanel, null);
 		abbreviationPanel.setLayout(null);
 		
-		tblAbbreviation = new JTable();
-		tblAbbreviation.setBounds(18, 6, 502, 171);
-		abbreviationPanel.add(tblAbbreviation);
+		scrollPane_1 = new JScrollPane();
+		scrollPane_1.setBounds(18, 6, 665, 171);
+		abbreviationPanel.add(scrollPane_1);
 		
-		JButton btnSave_1 = new JButton("Save");
-		btnSave_1.setBounds(18, 189, 75, 29);
-		abbreviationPanel.add(btnSave_1);
+		Vector<String> abbreviationColumnsName = new Vector<>();
+		abbreviationColumnsName.add("id");
+		abbreviationColumnsName.add("Abbreviation");
+		abbreviationColumnsName.add("Original");
+		abbreviationModel = new DefaultTableModel(abbreviationColumnsName, 0);
+		
+		tblAbbreviation = new JTable();
+		tblAbbreviation.setModel(abbreviationModel);
+		scrollPane_1.setViewportView(tblAbbreviation);
+		
+		btnSaveAbbreviation = new JButton("Save");
+		btnSaveAbbreviation.setBounds(18, 189, 75, 29);
+		abbreviationPanel.add(btnSaveAbbreviation);
+		
+		btnAddAbbreviation = new JButton("add");
+		btnAddAbbreviation.setBounds(105, 189, 75, 29);
+		abbreviationPanel.add(btnAddAbbreviation);
+		
+		 btnRemoveAbbreviation = new JButton("remove");
+		btnRemoveAbbreviation.setBounds(192, 189, 104, 29);
+		abbreviationPanel.add(btnRemoveAbbreviation);
 		
 		//tab 6
 		JPanel statisticsPanel = new JPanel();
@@ -254,6 +272,15 @@ public class LibraryView extends JFrame {
 		
 		this.btnsaveUnlabel.setActionCommand(KConstant.ACTION_COMMAND_SAVE_UNLABEL_WORD);
 		this.btnsaveUnlabel.addActionListener(act);
+		
+		this.btnAddAbbreviation.setActionCommand(KConstant.ACTION_COMMAND_ADD_ABBREVIATION);
+		this.btnAddAbbreviation.addActionListener(act);
+		
+		this.btnSaveAbbreviation.setActionCommand(KConstant.ACTION_COMMAND_SAVE_ABBREVIATION);
+		this.btnSaveAbbreviation.addActionListener(act);
+
+		this.btnRemoveAbbreviation.setActionCommand(KConstant.ACTION_COMMAND_REMOVE_ABBREVIATION);
+		this.btnRemoveAbbreviation.addActionListener(act);
 	}
 	
 	public void addRadioButtonActionListener(ActionListener act){
@@ -265,6 +292,7 @@ public class LibraryView extends JFrame {
 		
 		this.rdbtnUnlabel.setActionCommand(KConstant.ACTION_COMMAND_UNLABEL_SELECTED);
 		this.rdbtnUnlabel.addActionListener(act);
+		
 	}
 	
 	public Vector<KComment> getLearnData(){
@@ -274,7 +302,7 @@ public class LibraryView extends JFrame {
 			if(classifistatus==null){
 				continue;
 			}
-			if(classifistatus.equals("1")||classifistatus.equals("0")){
+			if(classifistatus.equals("1")||classifistatus.equals("-1")){
 				String comment = (String) learnDataModel.getValueAt(i, 1);
 				KComment newComment = new KComment();
 				newComment.setContent(comment);
@@ -318,11 +346,46 @@ public class LibraryView extends JFrame {
 		return kword;
 	}
 	
+
+	
 	public void setUnlabelSelected(){
 		this.rdbtnUnlabel.setSelected(true);
 	}
 	
 	public String getKeyword(){
 		return this.txtKeyword.getText();
+	}
+
+	public void addRowAbbrevation(){
+		this.abbreviationModel.addRow(new Vector<String>());
+	}
+	
+	public Vector<AbbreviationWord> getAbbrevationData(){
+		Vector<AbbreviationWord> abWords = new Vector<>();
+		for (int i = 0; i < abbreviationModel.getRowCount(); i++) {
+			AbbreviationWord abw = new AbbreviationWord();
+			abw.setAbbreviation((String)abbreviationModel.getValueAt(i, 1));
+			abw.setOriginal((String)abbreviationModel.getValueAt(i, 2));
+			abWords.add(abw);
+		}
+		return abWords;
+	}
+	public void setTblAbbreviation(Vector<AbbreviationWord> abbreviation){
+		while(abbreviationModel.getRowCount()>0){
+			abbreviationModel.removeRow(0);
+		}
+		
+		for (AbbreviationWord abbreviationWord : abbreviation) {
+			Vector<String>row = new Vector<>();
+			row.add(abbreviationModel.getRowCount()+1+"");
+			row.add(abbreviationWord.getAbbreviation());
+			row.add(abbreviationWord.getOriginal());
+			abbreviationModel.addRow(row);
+		}
+	}
+	
+	public void removeAbbreviationRow(){
+		int index = this.tblAbbreviation.getSelectedRow();
+		this.abbreviationModel.removeRow(index);
 	}
 }

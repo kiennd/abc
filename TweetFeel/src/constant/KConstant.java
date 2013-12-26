@@ -18,6 +18,12 @@ public class KConstant {
 	public static String ACTION_COMMAND_DECISION_SELECTED = "RADIO BUTTON DECISION SELECTED";
 	public static String ACTION_COMMAND_NON_DECISION_SELECTED = "RADIOBUTTON NON DECISION SELECTED";
 	public static String ACTION_COMMAND_UNLABEL_SELECTED = "RADIOBUTTON UNLABEL SELECTED";
+	public static String ACTION_COMMAND_CLASSIFY = "CLASSIFY";
+	public static String ACTION_COMMAND_SAVE_ABBREVIATION = "SAVE_ABBREVIATION";
+	public static String ACTION_COMMAND_ADD_ABBREVIATION = "ADD_ABBREVIATION";
+	public static String ACTION_COMMAND_REMOVE_ABBREVIATION = "REMOVE_ABBREVIATION";
+	public static String ACTION_COMMAND_VIEW_CHART = "VIEW_CHART";
+	
 	
 	
 	public static String DECISION_LABEL = "DECISION";
@@ -29,10 +35,13 @@ public class KConstant {
 	
 	public static String LANGUAGE_VIETNAM = "vi";
 	public static String LANGUAGE_ENGLISH = "en";
+	
+	
 	public static String LEARN_DATA_FILE_NAME = "learnData.lib";
 	public static String UNLABEL_WORD_LIB_FILE_NAME = "unlabelWords.lib";
 	public static String DECISION_WORD_LIB_FILE_NAME = "decisionWords.lib";
 	public static String NONDECISION_WORD_LIB_FILE_NAME = "nonDecisionWords.lib";
+	public static String ABBREVIATION_LIB_FILE_NAME = "abbreviation.lib";
 	
 	
 	

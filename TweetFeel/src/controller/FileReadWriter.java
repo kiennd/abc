@@ -16,6 +16,7 @@ import java.util.Vector;
 import javax.xml.stream.events.Comment;
 
 import constant.KConstant;
+import model.AbbreviationWord;
 import model.KComment;
 import model.KWord;
 
@@ -95,6 +96,14 @@ public class FileReadWriter {
     	}
     	return new Vector<>();
     }
+    public static Vector<AbbreviationWord> readAbbreviationLib(){
+    	Vector<AbbreviationWord> words = (Vector<AbbreviationWord>) fileToObject(KConstant.ABBREVIATION_LIB_FILE_NAME);
+    	if(words!=null){
+    		return words;
+    	}
+    	return new Vector<>();
+    }
+    
     
     public static Vector<KWord> readDecisionWordLib(){
     	Vector<KWord> words = (Vector<KWord>) fileToObject(KConstant.DECISION_WORD_LIB_FILE_NAME);

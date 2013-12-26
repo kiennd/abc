@@ -46,7 +46,8 @@ public class CommentFetcher {
 					KComment subComment = new KComment();
 					subComment.setContent(subCommentJson.getString("content"));
 					subComment.setUser("-"+subCommentJson.getString("full_name"));
-					comment.addSubComment(subComment);
+					comments.add(subComment);
+//					comment.addSubComment(subComment);
 				}
 				
 			}

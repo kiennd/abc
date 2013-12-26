@@ -13,6 +13,7 @@ import javax.swing.JFileChooser;
 import javax.xml.stream.events.Comment;
 
 import constant.KConstant;
+import model.AbbreviationWord;
 import model.KComment;
 import model.KWord;
 import view.LibraryView;
@@ -45,6 +46,7 @@ public class LibraryController {
 		libraryView.addRadioButtonActionListener(new RadioButtonActionListener());
 		currentRadioSelected = KConstant.UNLABEL;
 		libraryView.setUnlabelSelected();
+		libraryView.setTblAbbreviation(FileReadWriter.readAbbreviationLib());
 		
 	}
 
@@ -223,6 +225,17 @@ public class LibraryController {
 				saveData();
 			}
 			
+			if(e.getActionCommand().equals(KConstant.ACTION_COMMAND_ADD_ABBREVIATION)){
+				libraryView.addRowAbbrevation();
+			}
+			if(e.getActionCommand().equals(KConstant.ACTION_COMMAND_SAVE_ABBREVIATION)){
+				Vector<AbbreviationWord> abws = libraryView.getAbbrevationData();
+				FileReadWriter.objectToFile(KConstant.ABBREVIATION_LIB_FILE_NAME, abws);
+			}
+			if(e.getActionCommand().equals(KConstant.ACTION_COMMAND_REMOVE_ABBREVIATION)){
+				libraryView.removeAbbreviationRow();
+			}
+
 		}
 
 	}
@@ -277,5 +290,5 @@ public class LibraryController {
 		new LibraryController().initLibraryView(new LibraryView());
 		;
 	}
-
+	
 }

@@ -17,8 +17,6 @@ public class Classifier {
 
 	public Classifier() {
 		this.wordlib = FileReadWriter.readDecisionWordLib();
-		
-		
 	}
 
 	public int classifiSentence(String sentence) {
@@ -77,8 +75,9 @@ public class Classifier {
 	private Vector<KWord> buildWordList(String sentence) {
 		Vector<KWord> words = new Vector<>();
 		String str = sentence;
-		VietnameseMaxentTagger vnTagger = new VietnameseMaxentTagger();
+		VietnameseMaxentTagger vnTagger = SingletonData.getVnTagger();
 		List<WordTag> list = vnTagger.tagText2(str);
+		
 		for (int i = 0; i < list.size(); i++) {
 			System.out.println(list.get(i).tag() + " " + list.get(i).word());
 			String tag = list.get(i).tag();

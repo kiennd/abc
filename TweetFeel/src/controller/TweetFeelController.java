@@ -2,12 +2,20 @@ package controller;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Vector;
 
+import model.AbbreviationWord;
 import model.KComment;
-import model.KWord;
 import model.SearchInfo;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartFrame;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.general.DefaultPieDataset;
+
 import twitter4j.FilterQuery;
 import twitter4j.Query;
 import twitter4j.QueryResult;
@@ -27,6 +35,7 @@ public class TweetFeelController {
 	private TweetFeelView tfv;
 	private SearchInfo currentSearchInfo;
 	private Vector<KComment> comments = new Vector<>();
+	private Vector<AbbreviationWord> abwLib = FileReadWriter.readAbbreviationLib();
 	
 	public TweetFeelController() {
 		
@@ -112,7 +121,6 @@ public class TweetFeelController {
 			@Override
 			public void onStallWarning(StallWarning arg0) {
 			}
-
 		};
 		FilterQuery fq = new FilterQuery();
 
@@ -135,8 +143,14 @@ public class TweetFeelController {
 	}
 	
 	public KComment generateComment(String user,String content, SearchInfo sf){
+		
 		KComment comment = new KComment();
 		String statusText = content;
+		
+		for (int i = 0; i < abwLib.size(); i++) {
+			statusText.replaceAll(abwLib.get(i).getAbbreviation(), abwLib.get(i).getOriginal());
+		}
+		
 		statusText = statusText.replaceAll("\n", " ");
 		statusText = statusText.replaceAll("\t", " ");
 		
@@ -161,8 +175,45 @@ public class TweetFeelController {
 		
 		comment.setContent(statusText);
 		comment.setUser(user);
+		
+		
 		return comment;
 	}
+	
+    public void drawChar(int Pos, int Neg, int Neu){
+        DefaultPieDataset data = new DefaultPieDataset(); 
+        int sum = Neg + Neu+Pos;
+        //float ne = Math.round(se.getNegative()/sum, 2);
+       //MathForDummies.round(3.1415926, 2);
+       // DefaultPieDataset data = new DefaultPieDataset(); 
+       // int sum = tichcuc + tieucuc + khongco;
+         DecimalFormat df=new DecimalFormat("0.00"); 
+        df.setRoundingMode(RoundingMode.UP); 
+        
+        float tic = (float)Pos*100/(float)sum;
+        float tec = (float)Neg*100/(float)sum;
+        float kc = (float)Neu*100/(float)sum;
+
+        data.setValue("Tiêu cực: " + Neg+ " (" + df.format(tec) + "%)", Neg); 
+        data.setValue("Tích cực: " + Pos+ " (" + df.format(tic) + "%)", Pos); 
+        data.setValue("Trung lập: " + Neu+ " (" + df.format(kc) + "%)", Neu); 
+        // create a chart... 
+        JFreeChart chart = ChartFactory.createPieChart( 
+        "Biểu đồ thống kê", 
+        data, 
+        true, // legend? 
+        true, // tooltips? 
+        false // URLs? 
+        ); 
+        // create and display a frame... 
+        ChartFrame frame = new ChartFrame("Tweets Feel", chart); 
+        frame.pack(); 
+        //hien thi bieu do len giua ban hinh
+        java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        frame.setBounds((screenSize.width-frame.getWidth())/2, (screenSize.height-frame.getHeight())/2, frame.getWidth(), frame.getHeight());
+        
+        frame.setVisible(true); 
+    }
 	
 	
 	/*
@@ -196,17 +247,11 @@ public class TweetFeelController {
 					Vector<KComment> newcomments = CommentFetcher.fetchComments(currentSearchInfo.getKeyword());
 					comments = new Vector<>();
 					for (KComment comment : newcomments) {
-						Vector<KComment> subComments = new Vector<>();
-						for (KComment subComment : comment.getSubComment()) {
-							subComments.addElement(generateComment("-"+subComment.getUser(), subComment.getContent(), currentSearchInfo));
-						}
 						comment = generateComment(comment.getUser(), comment.getContent(), currentSearchInfo);
 						System.out.println(comment.getContent());
-						comment.setSubComment(subComments);
-						
 						comments.addElement(comment);
 					}
-					tfv.setTblStatus(comments);
+					tfv.setTblComment(comments);
 					
 				}
 				if(sf.getType() == KConstant.METHOD_VNEXPRESS_RSS){
@@ -217,10 +262,8 @@ public class TweetFeelController {
 						System.out.println(comment.getContent());
 						comments.addElement(comment);
 					}
-					tfv.setTblStatus(comments);
-					
+					tfv.setTblComment(comments);
 				}
-				
 			}
 			if(e.getActionCommand().equalsIgnoreCase(KConstant.ACTION_COMMAND_ADD_LEARN_DATA)){
 				Vector<KComment> newData = tfv.getLearnData();
@@ -233,8 +276,45 @@ public class TweetFeelController {
 				new LibraryController().initLibraryView(new LibraryView());
 			}
 			
+			if(e.getActionCommand().equals(KConstant.ACTION_COMMAND_CLASSIFY)){
+				Vector<KComment> comments = tfv.getCommentData();
+				Vector<KComment> classifierResult = new Vector<>();
+				for (KComment kComment : comments) {
+					Classifier clf = new Classifier();
+					int result = clf.classifiSentence(kComment.getContent());
+					kComment.setStatus(result);
+					classifierResult.add(kComment);
+					
+				}
+				tfv.setTblComment(classifierResult);
+			}
+			
+			if(e.getActionCommand().equals(KConstant.ACTION_COMMAND_VIEW_CHART)){
+				Vector<KComment> comments = tfv.getCommentData();
+				int neg=0,pos=0,neu=0;
+				for (KComment kComment : comments) {
+					if(kComment.getStatus()==1){
+						pos++;
+						continue;
+					}
+					if(kComment.getStatus()==-1){
+						neg++;
+						continue;
+					}
+					if(kComment.getStatus()==1){
+						neu++;
+						continue;
+					}
+					
+				}
+				
+				drawChar(pos, neg, neu);
+				
+				
+			}
 		}
 	}
 	
-
+	
+	
 }

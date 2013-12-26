@@ -16,8 +16,8 @@ public class TwitterConnector {
     		cb.setDebugEnabled(true)
     		.setOAuthConsumerKey("nwtxXsRyFJzCiNgIGFL4g") 
     		.setOAuthConsumerSecret("oW1Uu6niqZXGtXFy0b8iwKoVXa1GFJDT1RYF8Zgc")
-    		.setOAuthAccessToken("2235912205-QNAYsbJm5MzqP91LQbzFBod254k1HB3ggyJb4Y5")
-    		.setOAuthAccessTokenSecret("v6CZ8e0GRFWLJg7GgLx1rdhIJ00wgDXJsSeosUXllG93s");
+    		.setOAuthAccessToken("2235912205-xyK7XIj74xyuyDj6nFWjsjuoO8j8Wv0R2RzyYhn")
+    		.setOAuthAccessTokenSecret("WBH7VYBVfTY52rsNCTA2Tc6DgG3HdjJYMoCoNiRGWQkTr");
     		twitter = new TwitterFactory(cb.build()).getInstance();
     	}
         return twitter;
@@ -29,8 +29,8 @@ public class TwitterConnector {
     		cb.setDebugEnabled(true)
     		.setOAuthConsumerKey("nwtxXsRyFJzCiNgIGFL4g") 
     		.setOAuthConsumerSecret("oW1Uu6niqZXGtXFy0b8iwKoVXa1GFJDT1RYF8Zgc")
-    		.setOAuthAccessToken("2235912205-QNAYsbJm5MzqP91LQbzFBod254k1HB3ggyJb4Y5")
-    		.setOAuthAccessTokenSecret("v6CZ8e0GRFWLJg7GgLx1rdhIJ00wgDXJsSeosUXllG93s");
+    		.setOAuthAccessToken("2235912205-xyK7XIj74xyuyDj6nFWjsjuoO8j8Wv0R2RzyYhn")
+    		.setOAuthAccessTokenSecret("WBH7VYBVfTY52rsNCTA2Tc6DgG3HdjJYMoCoNiRGWQkTr");
     		twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
     	}
 

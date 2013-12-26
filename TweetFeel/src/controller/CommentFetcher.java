@@ -18,11 +18,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class CommentFetcher {
-	
-	public static Vector<KComment> fetchComments(String url) {
-		
+	// vne link
+	public static Vector<KComment> vnefetchComments(String url) {
 		Vector<KComment> comments = new Vector<>();
-		url = getLinkJson(url);
+		url = vneGetLinkJson(url);
 		System.out.println(url);
 		JSONObject jsonComment;
 		try {
@@ -58,15 +57,16 @@ public class CommentFetcher {
 		return comments;
 	}
 	
-	public static Vector<KComment> rssToComments(String vnUrl){
+	// rss link
+	public static Vector<KComment> vneRssToComments(String vnUrl){
 		Vector<String> links;
 		Vector<KComment> comments = new Vector<>();
 		try {
 			links = rsstolink(vnUrl);
 			for (String string : links) {
-				String jsonUrl = getLinkJson(string);
+//				String jsonUrl = getLinkJson(string);
 				Vector<KComment> newComments;
-				newComments = fetchComments(jsonUrl);
+				newComments = vnefetchComments(string);
 				comments.addAll(newComments);
 			}
 		} catch (IOException e) {
@@ -75,7 +75,7 @@ public class CommentFetcher {
 		return comments;
 	}
 
-	private static String getLinkJson(String vnUrl) {
+	private static String vneGetLinkJson(String vnUrl) {
 		// example :vnurl =
 		// http://thethao.vnexpress.net/tin-tuc/sea-games-27/boi-thu-hc-vang-viet-nam-vung-vang-thu-hai-2925795.html
 		// split : tach cac string duoc phan cach boi dau "-"
@@ -91,10 +91,11 @@ public class CommentFetcher {
 				+ index;
 		return result;
 	}
+	
+
 	private static Vector<String> rsstolink(String rssUrl)
 			throws MalformedURLException, IOException {
 		Vector<String> links = new Vector<>();
-
 		try {
 			DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();
 			DocumentBuilder b = f.newDocumentBuilder();
@@ -125,6 +126,89 @@ public class CommentFetcher {
 		}
 
 		return links;
+	}
+	/*
+	 * zing
+	 */
+	private static String zingGetIndex(String originUrl){
+		String[] linkElement = originUrl.split("-");
+		String[] indexHtml = linkElement[linkElement.length - 1].split("\\.");
+		String index = indexHtml[0];
+		return index+".html";
+	}
+	
+	public static Vector<KComment> zingGetCommentsFromUrl(String originUrl){
+		String baseZing = "http://news.zing.vn/zingnews-";
+		String zingIndex = zingGetIndex(originUrl);
+		Vector<KComment> comments = new Vector<>();
+		// ids content
+		String rootObject = baseZing+zingIndex;
+		
+		comments = getFacebookComment(rootObject);
+	
+		return comments;
+	}
+	
+	public static Vector<KComment> zingGetCommentsFromRSS(String rssUrl){
+		Vector<KComment> kComments = new Vector<>();
+		try {
+			Vector<String> links = rsstolink(rssUrl);
+			for (String string : links) {
+				
+				kComments.addAll(zingGetCommentsFromUrl(string));
+			}
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return kComments;
+	}
+	
+	//haivl
+	
+	public static Vector<KComment> haivlGetCommentsFromUrl(String originUrl){
+		Vector<KComment> comments = new Vector<>();
+		comments = getFacebookComment(originUrl);
+		return comments;
+	}
+	private static Vector<KComment> getFacebookComment(String rootObject){
+		String baseFb = "https://graph.facebook.com/comments/?limit=1000&ids=";
+	
+		Vector<KComment> kComments = new Vector<>();
+		String jsonUrl =baseFb+rootObject;
+		
+		JSONObject jsonComment;
+		try {
+			jsonComment = JSonReader.readJsonFromUrl(jsonUrl);
+			
+			JSONObject jsonRoot = jsonComment.getJSONObject(rootObject);
+			JSONObject comments = jsonRoot.getJSONObject("comments");
+			
+			JSONArray items = comments.getJSONArray("data");
+			for (int i = 0; i < items.length(); i++) {
+				JSONObject commentJson = (JSONObject) items.get(i); 
+				
+				KComment comment = new KComment();
+				comment.setContent(commentJson.getString("message"));
+				JSONObject from = commentJson.getJSONObject("from");
+				comment.setUser(from.getString("name"));
+				kComments.add(comment);
+				
+
+				
+			}
+		} catch (IOException | JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return kComments;
+	}
+	
+	public static void main(String[] args) throws IOException, JSONException {
+//		zingGetCommentsFromUrl("http://news.zing.vn/Dan-truoc-2-ban-U19-Viet-Nam-thua-nguoc-HAGL-46-post380744.html");
+		zingGetCommentsFromRSS("http://news.zing.vn/rss/tin-moi.rss");
 	}
 
 	

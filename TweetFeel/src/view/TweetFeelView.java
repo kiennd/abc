@@ -43,7 +43,7 @@ public class TweetFeelView extends JFrame {
 	 */
 	public TweetFeelView() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 606, 442);
+		setBounds(100, 100, 607, 471);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -103,8 +103,7 @@ public class TweetFeelView extends JFrame {
 		contentPane.add(btnDetect);
 
 		methodCombo = new JComboBox();
-		methodCombo.setModel(new DefaultComboBoxModel(new String[] {
-				"Search API", "Stream", "VnExpress URL", "VnExpress RSS" }));
+		methodCombo.setModel(new DefaultComboBoxModel(new String[] {"Search API", "Stream", "VnExpress URL", "VnExpress RSS", "NgoiSao.net URL", "NgoiSao.net RSS", "News.Zing URL", "News.Zing RSS", "Haivl.com URL"}));
 		methodCombo.setBounds(175, 74, 123, 27);
 		contentPane.add(methodCombo);
 
@@ -146,6 +145,10 @@ public class TweetFeelView extends JFrame {
 		btnViewChart = new JButton("View chart");
 		btnViewChart.setBounds(458, 375, 117, 29);
 		contentPane.add(btnViewChart);
+		
+		JLabel backGround = new JLabel("");
+		backGround.setBounds(0, 0, 591, 432);
+		contentPane.add(backGround);
 	}
 
 	public void addButtonAction(ActionListener act) {
@@ -271,6 +274,4 @@ public class TweetFeelView extends JFrame {
 		}
 		return comments;
 	}
-	
-	
 }

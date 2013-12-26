@@ -5,6 +5,12 @@ public class KConstant {
 	public static int METHOD_STREAM_API = 1;
 	public static int METHOD_VNEXPRESS_URL = 2;
 	public static int METHOD_VNEXPRESS_RSS = 3;
+	public static int METHOD_NGOISAO_URL = 4;
+	public static int METHOD_NGOISAO_RSS = 5;
+	public static int METHOD_ZING_URL = 6;
+	public static int METHOD_ZING_RSS = 7;
+	public static int METHOD_HAIVL_URL = 8;
+	
 	
 	
 	public static String ACTION_COMMAND_SEARCH = "search";

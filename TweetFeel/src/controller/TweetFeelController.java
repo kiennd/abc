@@ -148,7 +148,7 @@ public class TweetFeelController {
 		String statusText = content;
 		
 		for (int i = 0; i < abwLib.size(); i++) {
-			statusText.replaceAll(abwLib.get(i).getAbbreviation(), abwLib.get(i).getOriginal());
+			statusText = statusText.replaceAll("(?i)"+abwLib.get(i).getAbbreviation(), abwLib.get(i).getOriginal());
 		}
 		
 		statusText = statusText.replaceAll("\n", " ");
@@ -215,6 +215,15 @@ public class TweetFeelController {
         frame.setVisible(true); 
     }
 	
+    public void processNewComments(Vector<KComment> newcomments){
+		comments = new Vector<>();
+		for (KComment comment : newcomments) {
+			comment = generateComment(comment.getUser(), comment.getContent(), currentSearchInfo);
+			System.out.println(comment.getContent());
+			comments.addElement(comment);
+		}
+		tfv.setTblComment(comments);
+    }
 	
 	/*
 	 * Action definition
@@ -243,27 +252,31 @@ public class TweetFeelController {
 					streamFilter(sf.getKeyword(), sf.getLanguage());
 				}
 				
-				if(sf.getType() == KConstant.METHOD_VNEXPRESS_URL){
-					Vector<KComment> newcomments = CommentFetcher.fetchComments(currentSearchInfo.getKeyword());
-					comments = new Vector<>();
-					for (KComment comment : newcomments) {
-						comment = generateComment(comment.getUser(), comment.getContent(), currentSearchInfo);
-						System.out.println(comment.getContent());
-						comments.addElement(comment);
-					}
-					tfv.setTblComment(comments);
+				if(sf.getType() == KConstant.METHOD_VNEXPRESS_URL|| sf.getType() == KConstant.METHOD_NGOISAO_URL){
+					Vector<KComment> newcomments = CommentFetcher.vnefetchComments(currentSearchInfo.getKeyword());
+					processNewComments(newcomments);
 					
 				}
-				if(sf.getType() == KConstant.METHOD_VNEXPRESS_RSS){
-					Vector<KComment> newcomments = CommentFetcher.rssToComments(currentSearchInfo.getKeyword());
-					comments = new Vector<>();
-					for (KComment comment : newcomments) {
-						comment = generateComment(comment.getUser(), comment.getContent(), currentSearchInfo);
-						System.out.println(comment.getContent());
-						comments.addElement(comment);
-					}
-					tfv.setTblComment(comments);
+				if(sf.getType() == KConstant.METHOD_VNEXPRESS_RSS || sf.getType() == KConstant.METHOD_NGOISAO_RSS){
+					Vector<KComment> newcomments = CommentFetcher.vneRssToComments(currentSearchInfo.getKeyword());
+					processNewComments(newcomments);
 				}
+				if(sf.getType() == KConstant.METHOD_ZING_URL){
+					Vector<KComment> newcomments = CommentFetcher.zingGetCommentsFromUrl(currentSearchInfo.getKeyword());
+					processNewComments(newcomments);
+				}
+				
+				if(sf.getType() == KConstant.METHOD_ZING_RSS){
+					Vector<KComment> newcomments = CommentFetcher.zingGetCommentsFromRSS(currentSearchInfo.getKeyword());
+					processNewComments(newcomments);
+				}
+				if(sf.getType() == KConstant.METHOD_HAIVL_URL){
+					Vector<KComment> newcomments = CommentFetcher.haivlGetCommentsFromUrl(currentSearchInfo.getKeyword());
+					processNewComments(newcomments);
+				}
+				
+				
+				
 			}
 			if(e.getActionCommand().equalsIgnoreCase(KConstant.ACTION_COMMAND_ADD_LEARN_DATA)){
 				Vector<KComment> newData = tfv.getLearnData();
@@ -293,24 +306,20 @@ public class TweetFeelController {
 				Vector<KComment> comments = tfv.getCommentData();
 				int neg=0,pos=0,neu=0;
 				for (KComment kComment : comments) {
-					if(kComment.getStatus()==1){
+					if(kComment.getStatus()>=1){
 						pos++;
 						continue;
 					}
-					if(kComment.getStatus()==-1){
+					if(kComment.getStatus()<=-1){
 						neg++;
 						continue;
 					}
-					if(kComment.getStatus()==1){
+					if(kComment.getStatus()==0){
 						neu++;
 						continue;
 					}
-					
 				}
-				
 				drawChar(pos, neg, neu);
-				
-				
 			}
 		}
 	}

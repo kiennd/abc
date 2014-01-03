@@ -29,6 +29,4 @@ public class AbbreviationWord implements Serializable{
 		Abbreviation = abbreviation;
 	}
     
-    
-    
 }

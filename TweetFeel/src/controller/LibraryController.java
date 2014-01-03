@@ -1,24 +1,33 @@
 package controller;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.Box.Filler;
 import javax.swing.JFileChooser;
-import javax.xml.stream.events.Comment;
 
-import constant.KConstant;
 import model.AbbreviationWord;
+import model.EffectWord;
 import model.KComment;
 import model.KWord;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartFrame;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.Plot;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.category.CategoryItemRenderer;
+import org.jfree.data.general.DefaultPieDataset;
+
 import view.LibraryView;
 import vn.hus.nlp.tagger.VietnameseMaxentTagger;
-import edu.stanford.nlp.ling.Word;
+import constant.KConstant;
 import edu.stanford.nlp.ling.WordTag;
 
 public class LibraryController {
@@ -47,9 +56,87 @@ public class LibraryController {
 		currentRadioSelected = KConstant.UNLABEL;
 		libraryView.setUnlabelSelected();
 		libraryView.setTblAbbreviation(FileReadWriter.readAbbreviationLib());
+		libraryView.setEffectWorData(FileReadWriter.readEffectWordLib());
+	}
+	
+	public void initChart(Vector<KWord> unlabelWordLib ,Vector<KWord> decisionWordLib ,Vector<KWord> nondecisionWordLib){
+		int word1=0,word_1=0,word2=0,word_2=0;
+		for (KWord kWord : nondecisionWordLib) {
+			double weight = (double)kWord.getCountpos()/(double)(kWord.getCountpos()+kWord.getCountneg());
+			if(getFinalWeight(weight)==1){
+				word1++;
+				continue;
+			}
+			if(getFinalWeight(weight)==-1){
+				word_1++;
+				continue;
+			}
+			if(getFinalWeight(weight)==2){
+				word2++;
+				continue;
+			}
+			if(getFinalWeight(weight)==-1){
+				word_1++;
+				continue;
+			}
+		}
+		for (KWord kWord : unlabelWordLib) {
+			double weight = (double)kWord.getCountpos()/(double)(kWord.getCountpos()+kWord.getCountneg());
+			if(getFinalWeight(weight)==1){
+				word1++;
+				continue;
+			}
+			if(getFinalWeight(weight)==-1){
+				word_1++;
+				continue;
+			}
+			if(getFinalWeight(weight)==2){
+				word2++;
+				continue;
+			}
+			if(getFinalWeight(weight)==-1){
+				word_1++;
+				continue;
+			}
+		}
+		for (KWord kWord : decisionWordLib) {
+			double weight = (double)kWord.getCountpos()/(double)(kWord.getCountpos()+kWord.getCountneg());
+			if(getFinalWeight(weight)==1){
+				word1++;
+				continue;
+			}
+			if(getFinalWeight(weight)==-1){
+				word_1++;
+				continue;
+			}
+			if(getFinalWeight(weight)==2){
+				word2++;
+				continue;
+			}
+			if(getFinalWeight(weight)==-1){
+				word_1++;
+				continue;
+			}
+		}
+		drawChar(word1, word_1, word2, word_2, 656, 177);
 		
 	}
 
+	private int getFinalWeight(double weight) {
+
+		// nếu trọng số positive>=0.75 thì là 2, >=0.5 thì là 1, >=0.25
+		// là -1 còn <0.25 là -2
+		if (weight >= 0.75) {
+			return 2;
+		}
+		if (weight >= 0.5) {
+			return 1;
+		}
+		if (weight >= 0.25) {
+			return -1;
+		}
+		return -2;
+	}
 	/*
 	 * * 1. Np - Proper noun 2. Nc - Classifier 3. Nu - Unit noun 4. N - Common
 	 * noun 5. V - Verb //Dong tu 6. A - //Tinh tu 7. P - Pronoun 8. R - Adverb
@@ -236,6 +323,22 @@ public class LibraryController {
 				libraryView.removeAbbreviationRow();
 			}
 
+			if(e.getActionCommand().equals(KConstant.ACTION_COMMAND_VIEW_CHART)){
+				initChart(unlabelWordLib, decisionWordLib, nondecisionWordLib);
+			}
+
+			if(e.getActionCommand().equals(KConstant.ACTION_COMMAND_ADD_EFFECTWORD)){
+				libraryView.addEffectRow();
+			}
+
+			if(e.getActionCommand().equals(KConstant.ACTION_COMMAND_REMOVE_EFFECTWORD)){
+				libraryView.removeEffectRow();
+			}
+			if(e.getActionCommand().equals(KConstant.ACTION_COMMAND_SAVE_EFFECTWORD)){
+				Vector<EffectWord> words = libraryView.getEffectWordData();
+				FileReadWriter.objectToFile(KConstant.EFFECTWORD_LIB_FILE_NAME, words);
+			}
+			
 		}
 
 	}
@@ -285,10 +388,49 @@ public class LibraryController {
 		}
 		newLib.addElement(wordChanged);
 	}
+	
+	
+    public void drawChar(int word1, int word_1,int word2,int word_2, int width,int height){
+        DefaultPieDataset data = new DefaultPieDataset(); 
+        int sum = word_1 +word1+word2+word_2;
+        //float ne = Math.round(se.getNegative()/sum, 2);
+       //MathForDummies.round(3.1415926, 2);
+       // DefaultPieDataset data = new DefaultPieDataset(); 
+       // int sum = tichcuc + tieucuc + khongco;
+         DecimalFormat df=new DecimalFormat("0.00"); 
+        df.setRoundingMode(RoundingMode.UP); 
+        
+        float t1 = (float)word1*100/(float)sum;
+        float t_1 = (float)word_1*100/(float)sum;
+        float t2 = (float)word2*100/(float)sum;
+        float t_2 = (float)word_2*100/(float)sum;
+
+        
+        data.setValue("Weight = -1: " + word_1+ " (" + df.format(t_1) + "%)", word_1); 
+        data.setValue("Weight = 1: " + word1+ " (" + df.format(t1) + "%)", word1);
+        data.setValue("Weight = 2: " + word1+ " (" + df.format(t2) + "%)", word2);
+        data.setValue("Weight = -2: " + word1+ " (" + df.format(t_2) + "%)", word_2);
+        
+        // create a chart... 
+        JFreeChart chart = ChartFactory.createPieChart( 
+        "Biểu đồ thống kê", 
+        data, 
+        true, // legend? 
+        true, // tooltips? 
+        false // URLs? 
+        ); 
+        // create and display a frame... 
+        ChartFrame frame = new ChartFrame("Tweets Feel", chart); 
+        
+        frame.pack(); 
+        //hien thi bieu do len giua ban hinh
+        java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        frame.setBounds((screenSize.width-frame.getWidth())/2, (screenSize.height-frame.getHeight())/2, frame.getWidth(), frame.getHeight());
+        frame.setVisible(true); 
+    }
 
 	public static void main(String[] args) {
 		new LibraryController().initLibraryView(new LibraryView());
 		;
 	}
-	
 }

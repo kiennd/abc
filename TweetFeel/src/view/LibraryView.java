@@ -23,7 +23,10 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
+import org.jfree.chart.ChartPanel;
+
 import model.AbbreviationWord;
+import model.EffectWord;
 import model.KComment;
 import model.KWord;
 import constant.KConstant;
@@ -38,10 +41,15 @@ public class LibraryView extends JFrame {
 	private DefaultTableModel learnDataModel;
 	private DefaultTableModel wordTblModel;
 	private DefaultTableModel abbreviationModel;
+	private DefaultTableModel effectWordModel;
 	
-	private JButton btnSaveLearn,btnImportFromtxt,btnRebuildData,btnSearch,btnsaveUnlabel,btnSaveAbbreviation,btnAddAbbreviation,btnRemoveAbbreviation;
+	private JButton btnSaveLearn,btnImportFromtxt,btnRebuildData,btnSearch,btnsaveUnlabel,btnSaveAbbreviation,btnAddAbbreviation,btnRemoveAbbreviation,btnViewChart;
 	private JRadioButton rdbtnDecision,rdbtnNonDecision,rdbtnUnlabel;
 	private JScrollPane scrollPane_1;
+	private JTable tblEffectWord;
+	private JButton btnAddEff,btnSaveEff;
+	private JButton btnRemoveEff;
+	private JScrollPane scrollPane_3;
 	/**
 	 * Launch the application.
 	 */
@@ -62,7 +70,7 @@ public class LibraryView extends JFrame {
 	 * Create the frame.
 	 */
 	public LibraryView() {
-		setBounds(100, 100, 778, 445);
+		setBounds(100, 100, 838, 511);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -87,7 +95,7 @@ public class LibraryView extends JFrame {
 		contentPane.add(lblLibrary);
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(38, 122, 721, 268);
+		tabbedPane.setBounds(38, 122, 760, 322);
 		contentPane.add(tabbedPane);
 		// tab1
 		JPanel learnDataPanel = new JPanel();
@@ -95,7 +103,7 @@ public class LibraryView extends JFrame {
 		learnDataPanel.setLayout(null);
 		
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(16, 6, 661, 178);
+		scrollPane.setBounds(16, 6, 661, 237);
 		learnDataPanel.add(scrollPane);
 		
 		Vector<String>learnDataColumnNames = new Vector<>();
@@ -112,11 +120,11 @@ public class LibraryView extends JFrame {
 		scrollPane.setViewportView(tblLearnData);
 		
 		btnSaveLearn = new JButton("Save");
-		btnSaveLearn.setBounds(16, 191, 68, 29);
+		btnSaveLearn.setBounds(16, 254, 68, 29);
 		learnDataPanel.add(btnSaveLearn);
 		
 		btnImportFromtxt = new JButton("Import from *.txt");
-		btnImportFromtxt.setBounds(92, 191, 141, 29);
+		btnImportFromtxt.setBounds(92, 254, 141, 29);
 		learnDataPanel.add(btnImportFromtxt);
 		
 		
@@ -138,12 +146,12 @@ public class LibraryView extends JFrame {
 		initTblWord(tblWords.getColumnModel());
 		
 		btnRebuildData = new JButton("Rebuild data");
-		btnRebuildData.setBounds(24, 187, 117, 29);
+		btnRebuildData.setBounds(24, 241, 107, 29);
 	
 		unlabelWordPanel.setLayout(null);
 		unlabelWordPanel.add(btnRebuildData);
 		JScrollPane scrollPane_2 = new JScrollPane();
-		scrollPane_2.setBounds(24, 11, 656, 174);
+		scrollPane_2.setBounds(24, 11, 697, 207);
 		unlabelWordPanel.add(scrollPane_2);
 		
 		
@@ -155,7 +163,7 @@ public class LibraryView extends JFrame {
 		abbreviationPanel.setLayout(null);
 		
 		scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(18, 6, 665, 171);
+		scrollPane_1.setBounds(18, 6, 665, 237);
 		abbreviationPanel.add(scrollPane_1);
 		
 		Vector<String> abbreviationColumnsName = new Vector<>();
@@ -169,41 +177,83 @@ public class LibraryView extends JFrame {
 		scrollPane_1.setViewportView(tblAbbreviation);
 		
 		btnSaveAbbreviation = new JButton("Save");
-		btnSaveAbbreviation.setBounds(18, 189, 75, 29);
+		btnSaveAbbreviation.setBounds(18, 254, 75, 29);
 		abbreviationPanel.add(btnSaveAbbreviation);
 		
 		btnAddAbbreviation = new JButton("add");
-		btnAddAbbreviation.setBounds(105, 189, 75, 29);
+		btnAddAbbreviation.setBounds(105, 254, 75, 29);
 		abbreviationPanel.add(btnAddAbbreviation);
 		
 		 btnRemoveAbbreviation = new JButton("remove");
-		btnRemoveAbbreviation.setBounds(192, 189, 104, 29);
+		btnRemoveAbbreviation.setBounds(192, 254, 104, 29);
 		abbreviationPanel.add(btnRemoveAbbreviation);
 		
-		//tab 6
-		JPanel statisticsPanel = new JPanel();
-		tabbedPane.addTab("Statistics", null, statisticsPanel, null);
-		
 		btnsaveUnlabel = new JButton("Save");
-		btnsaveUnlabel.setBounds(144, 187, 117, 29);
+		btnsaveUnlabel.setBounds(144, 241, 91, 29);
 		unlabelWordPanel.add(btnsaveUnlabel);
 		
 		rdbtnDecision = new JRadioButton("Decision words");
-		rdbtnDecision.setBounds(399, 188, 141, 23);
+		rdbtnDecision.setBounds(464, 244, 141, 23);
 		unlabelWordPanel.add(rdbtnDecision);
 		
 		 rdbtnNonDecision = new JRadioButton("Non-Decision words");
-		rdbtnNonDecision.setBounds(527, 188, 167, 23);
+		rdbtnNonDecision.setBounds(595, 244, 167, 23);
 		unlabelWordPanel.add(rdbtnNonDecision);
 		
 		 rdbtnUnlabel = new JRadioButton("Unlabel");
-		rdbtnUnlabel.setBounds(298, 188, 91, 23);
+		rdbtnUnlabel.setBounds(371, 244, 91, 23);
 		unlabelWordPanel.add(rdbtnUnlabel);
 		
 		ButtonGroup bg = new ButtonGroup();
 		bg.add(rdbtnUnlabel);
 		bg.add(rdbtnNonDecision);
 		bg.add(rdbtnDecision);
+		
+		 btnViewChart = new JButton("View Chart");
+		btnViewChart.setBounds(245, 241, 89, 29);
+		unlabelWordPanel.add(btnViewChart);
+		
+		JPanel effectWordPanel = new JPanel();
+		tabbedPane.addTab("Effect word lib", null, effectWordPanel, null);
+		effectWordPanel.setLayout(null);
+		
+		Vector<String> effwordColumnsName = new Vector<>();
+		effwordColumnsName.add("ID");
+		effwordColumnsName.add("Type");
+		
+		effwordColumnsName.add("Word");
+		effwordColumnsName.add("Weight");
+		
+		effectWordModel = new DefaultTableModel(effwordColumnsName, 0);
+		
+		scrollPane_3 = new JScrollPane();
+		scrollPane_3.setBounds(24, 19, 709, 204);
+		effectWordPanel.add(scrollPane_3);
+		tblEffectWord = new JTable();
+		scrollPane_3.setViewportView(tblEffectWord);
+		tblEffectWord.setModel(effectWordModel);
+		initTblEfWord(tblEffectWord.getColumnModel());
+		
+		 btnSaveEff = new JButton("Save");
+		btnSaveEff.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
+		btnSaveEff.setBounds(34, 235, 89, 23);
+		effectWordPanel.add(btnSaveEff);
+		
+		btnAddEff = new JButton("Add");
+		btnAddEff.setBounds(147, 234, 89, 23);
+		effectWordPanel.add(btnAddEff);
+		
+		btnRemoveEff = new JButton("Remove");
+		btnRemoveEff.setBounds(264, 235, 89, 23);
+		effectWordPanel.add(btnRemoveEff);
+		
+		LabelImageScalable label_1 = new LabelImageScalable();
+		label_1.setBounds(0, -3, 822, 475);
+		label_1.setImage("images/bg2.jpg");
+		contentPane.add(label_1);
 		
 	}
 	
@@ -224,15 +274,32 @@ public class LibraryView extends JFrame {
 		
 	}
 	
+	public void initTblEfWord(TableColumnModel columnModel){
+		columnModel.getColumn(0).setMaxWidth(60);
+		columnModel.getColumn(1).setMaxWidth(200);
+		columnModel.getColumn(2).setMaxWidth(400);
+		columnModel.getColumn(3).setMaxWidth(80);
+		
+		JComboBox<String> comboLabel = new JComboBox<>();
+		comboLabel.addItem(KConstant.WORD_BEFORE_WORD);
+		comboLabel.addItem(KConstant.WORD_AFTER_WORD);
+		comboLabel.addItem(KConstant.WORDS_BEFORE_TRING);
+		columnModel.getColumn(1).setCellEditor(new DefaultCellEditor(comboLabel));
+	}
+	
 	public void setTblLearnData(Vector<KComment> kstatuses){
 		while(learnDataModel.getRowCount()>0){
 			learnDataModel.removeRow(0);
 		}
 		int i = 1;
+		
 		for (KComment kStatus : kstatuses) {
 			Vector<String> rowElements = new Vector<>();
 			rowElements.addElement(i+"");
 			rowElements.addElement(kStatus.getContent());
+			if(kStatus.getStatus()==0){
+				kStatus.setStatus(-1);
+			}
 			rowElements.addElement(kStatus.getStatus()+"");
 			learnDataModel.addRow(rowElements);
 			i++;
@@ -281,6 +348,22 @@ public class LibraryView extends JFrame {
 
 		this.btnRemoveAbbreviation.setActionCommand(KConstant.ACTION_COMMAND_REMOVE_ABBREVIATION);
 		this.btnRemoveAbbreviation.addActionListener(act);
+		
+		this.btnViewChart.setActionCommand(KConstant.ACTION_COMMAND_VIEW_CHART);
+		this.btnViewChart.addActionListener(act);
+		
+		this.btnAddEff.setActionCommand(KConstant.ACTION_COMMAND_ADD_EFFECTWORD);
+		this.btnAddEff.addActionListener(act);
+		
+		this.btnRemoveEff.setActionCommand(KConstant.ACTION_COMMAND_REMOVE_EFFECTWORD);
+		this.btnRemoveEff.addActionListener(act);
+		
+		this.btnSaveEff.setActionCommand(KConstant.ACTION_COMMAND_SAVE_EFFECTWORD);
+		this.btnSaveEff.addActionListener(act);
+		
+		
+		
+		
 	}
 	
 	public void addRadioButtonActionListener(ActionListener act){
@@ -356,9 +439,7 @@ public class LibraryView extends JFrame {
 		return this.txtKeyword.getText();
 	}
 
-	public void addRowAbbrevation(){
-		this.abbreviationModel.addRow(new Vector<String>());
-	}
+
 	
 	public Vector<AbbreviationWord> getAbbrevationData(){
 		Vector<AbbreviationWord> abWords = new Vector<>();
@@ -387,5 +468,49 @@ public class LibraryView extends JFrame {
 	public void removeAbbreviationRow(){
 		int index = this.tblAbbreviation.getSelectedRow();
 		this.abbreviationModel.removeRow(index);
+	}
+	public void addRowAbbrevation(){
+		Vector<String> v = new Vector<>();
+		v.add(abbreviationModel.getRowCount()+1+"");
+		this.abbreviationModel.addRow(v);
+	}
+	
+	
+	public void removeEffectRow(){
+		int index = this.tblEffectWord.getSelectedRow();
+		this.effectWordModel.removeRow(index);
+	}
+	public void addEffectRow(){
+		Vector<String> v = new Vector<>();
+		v.add(effectWordModel.getRowCount()+1+"");
+		this.effectWordModel.addRow(v);
+	}
+	
+	public Vector<EffectWord> getEffectWordData(){
+		Vector<EffectWord> words =new Vector<>();
+		for (int i = 0; i < effectWordModel.getRowCount(); i++) {
+			EffectWord ew = new EffectWord();
+			ew.setType((String)effectWordModel.getValueAt(i, 1));
+			ew.setWord((String)effectWordModel.getValueAt(i, 2));
+			ew.setWeight(Double.parseDouble((String)effectWordModel.getValueAt(i, 3)));
+			words.addElement(ew);
+		}
+		return words;
+	}
+	
+	public void setEffectWorData(Vector<EffectWord> words){
+		while(effectWordModel.getRowCount()>0){
+			effectWordModel.removeRow(0);
+		}
+		
+		for (EffectWord effectWord : words) {
+			Vector<String> row = new Vector<>();
+			row.add(effectWordModel.getRowCount()+1+"");
+			row.add(effectWord.getType());
+			row.add(effectWord.getWord());
+			row.add(effectWord.getWeight()+"");
+			effectWordModel.addRow(row);
+		}
+		
 	}
 }

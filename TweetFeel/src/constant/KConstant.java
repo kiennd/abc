@@ -10,6 +10,8 @@ public class KConstant {
 	public static int METHOD_ZING_URL = 6;
 	public static int METHOD_ZING_RSS = 7;
 	public static int METHOD_HAIVL_URL = 8;
+	public static int METHOD_RING_URL = 9;
+	public static int METHOD_RING_RSS = 10;
 	
 	
 	
@@ -29,12 +31,19 @@ public class KConstant {
 	public static String ACTION_COMMAND_ADD_ABBREVIATION = "ADD_ABBREVIATION";
 	public static String ACTION_COMMAND_REMOVE_ABBREVIATION = "REMOVE_ABBREVIATION";
 	public static String ACTION_COMMAND_VIEW_CHART = "VIEW_CHART";
+	public static String ACTION_COMMAND_SAVE_EFFECTWORD = "SAVE_EFFECTWORD";
+	public static String ACTION_COMMAND_ADD_EFFECTWORD = "ADD_EFFECTWORD";
+	public static String ACTION_COMMAND_REMOVE_EFFECTWORD = "REMOVE_EFFECTWORD";
+	public static String ACTION_COMMAND_MANUAL_COMMENT = "MANUAL_COMMENT";
 	
 	
 	
 	public static String DECISION_LABEL = "DECISION";
 	public static String NON_DECISION_LABEL = "NON-DECISION";
 	public static String UNLABEL = "UNLABEL";
+	public static String WORD_AFTER_WORD = "WORD AFTER WORD";
+	public static String WORD_BEFORE_WORD = "WORD BEFORE WORD";
+	public static String WORDS_BEFORE_TRING = "WORD BEFORE STRING";
 	
 	
 	
@@ -43,12 +52,10 @@ public class KConstant {
 	public static String LANGUAGE_ENGLISH = "en";
 	
 	
-	public static String LEARN_DATA_FILE_NAME = "learnData.lib";
-	public static String UNLABEL_WORD_LIB_FILE_NAME = "unlabelWords.lib";
-	public static String DECISION_WORD_LIB_FILE_NAME = "decisionWords.lib";
-	public static String NONDECISION_WORD_LIB_FILE_NAME = "nonDecisionWords.lib";
-	public static String ABBREVIATION_LIB_FILE_NAME = "abbreviation.lib";
-	
-	
-	
+	public static String LEARN_DATA_FILE_NAME = "mylib/learnData.lib";
+	public static String UNLABEL_WORD_LIB_FILE_NAME = "mylib/unlabelWords.lib";
+	public static String DECISION_WORD_LIB_FILE_NAME = "mylib/decisionWords.lib";
+	public static String NONDECISION_WORD_LIB_FILE_NAME = "mylib/nonDecisionWords.lib";
+	public static String ABBREVIATION_LIB_FILE_NAME = "mylib/abbreviation.lib";
+	public static String EFFECTWORD_LIB_FILE_NAME = "mylib/effectword.lib";
 }

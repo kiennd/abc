@@ -17,6 +17,7 @@ import javax.xml.stream.events.Comment;
 
 import constant.KConstant;
 import model.AbbreviationWord;
+import model.EffectWord;
 import model.KComment;
 import model.KWord;
 
@@ -63,6 +64,7 @@ public class FileReadWriter {
             o = oi.readObject();
             oi.close();
         } catch (IOException | ClassNotFoundException ex) {
+        	System.out.println(ex);
             return null;
         }
         return o;
@@ -98,6 +100,13 @@ public class FileReadWriter {
     }
     public static Vector<AbbreviationWord> readAbbreviationLib(){
     	Vector<AbbreviationWord> words = (Vector<AbbreviationWord>) fileToObject(KConstant.ABBREVIATION_LIB_FILE_NAME);
+    	if(words!=null){
+    		return words;
+    	}
+    	return new Vector<>();
+    }
+    public static Vector<EffectWord> readEffectWordLib(){
+    	Vector<EffectWord> words = (Vector<EffectWord>) fileToObject(KConstant.EFFECTWORD_LIB_FILE_NAME);
     	if(words!=null){
     		return words;
     	}

@@ -8,25 +8,37 @@ import javax.annotation.PostConstruct;
 import vn.hus.nlp.tagger.VietnameseMaxentTagger;
 import constant.KConstant;
 import edu.stanford.nlp.ling.WordTag;
+import model.EffectWord;
 import model.KComment;
 import model.KWord;
 
 public class Classifier {
 
 	private Vector<KWord> wordlib;
-
+	private Vector<EffectWord> effectWordlib;
 	public Classifier() {
 		this.wordlib = FileReadWriter.readDecisionWordLib();
+		this.effectWordlib = FileReadWriter.readEffectWordLib();
 	}
 
 	public int classifiSentence(String sentence) {
+		
+
+		for (int i = 0; i < effectWordlib.size(); i++) {
+			EffectWord ew = effectWordlib.elementAt(i);
+			if(ew.getType().equals(KConstant.WORDS_BEFORE_TRING)){
+				int index =  sentence.indexOf(ew.getWord());
+				if(index != -1){
+					sentence = 	sentence.substring(index);	
+				}
+			}
+		}
+		
 		Vector<KWord> wordList;
 		wordList = buildWordList(sentence);
 		int result =0;
 		for (KWord kword : wordList) {
-			if(kword.getWord().equalsIgnoreCase("không")){
-				continue;
-			}
+
 			double posWeight = getPosWeight(kword.getWord());
 			if(Double.isNaN(posWeight)){
 				continue;
@@ -35,18 +47,28 @@ public class Classifier {
 			
 			
 			int count = countWordInString(sentence, kword.getWord());
-			int count2 = countWordInString(sentence, "không "+kword.getWord());
 			
-			count-= count2;
 			
-			if(posfinalWeight > 0){
-				result += posfinalWeight*count;
-				result -= posfinalWeight*count2;
-			}else{
-				result += posfinalWeight*count;
-				result += (posfinalWeight+1)*count2;
+			for (int i = 0; i < effectWordlib.size(); i++) {
+				EffectWord ew = effectWordlib.elementAt(i);
+				if(ew.getType().equals(KConstant.WORD_BEFORE_WORD)){
+					int count2 = countWordInString(sentence,ew.getWord()+" "+kword.getWord());
+					result+= count2*ew.getWeight();
+					count-= count2;
+					continue;
+				}
+				if(ew.getType().equals(KConstant.WORD_AFTER_WORD)){
+					int count2 = countWordInString(kword.getWord()+" "+sentence,ew.getWord());
+					result+= count2*ew.getWeight();
+					count-= count2;
+					continue;
+				}
+
+				
 			}
-			System.out.println(count +" "+ count2+ " "+ kword.getWord()+" "+posfinalWeight);
+			
+			result += posfinalWeight*count;
+			
 		}
 		
 		return result;

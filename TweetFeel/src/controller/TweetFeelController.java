@@ -160,17 +160,17 @@ public class TweetFeelController {
 		
 		// remove url
 		if(sf.isRemoveUrl()){
-			statusText = statusText.replaceAll("[a-zA-Z]+:\\/\\/*+[a-zA-Z]+.[a-zA-Z\\?&-_]+","");
+			statusText = statusText.replaceAll("[a-zA-Z]+:\\/\\/*+[a-zA-Z]+.[a-zA-Z\\?&-_]+"," ");
 		}
 		
 		//remove html tag
 		if(sf.isRemoveHtmlTag()){
-			statusText = statusText.replaceAll("<[a-zA-Z \"=\\-/']+>","");
+			statusText = statusText.replaceAll("<[a-zA-Z_@ \"=\\-/']+>"," ");
 		}
 		
 		// remove special character
 		if(sf.isRemoveSpecial()){
-			statusText = statusText.replaceAll("[!@#$%^&\\*\\(\\)\\+=\\-_`~|}{\\[\\]:\"?/><';]","");
+			statusText = statusText.replaceAll("[!@#$%^&\\*\\(\\)\\+=\\-_`~|}{\\[\\]:\"?/><';]"," ");
 		}
 		
 		comment.setContent(statusText);
@@ -206,6 +206,7 @@ public class TweetFeelController {
         false // URLs? 
         ); 
         // create and display a frame... 
+        
         ChartFrame frame = new ChartFrame("Tweets Feel", chart); 
         frame.pack(); 
         //hien thi bieu do len giua ban hinh
@@ -274,7 +275,14 @@ public class TweetFeelController {
 					Vector<KComment> newcomments = CommentFetcher.haivlGetCommentsFromUrl(currentSearchInfo.getKeyword());
 					processNewComments(newcomments);
 				}
-				
+				if(sf.getType() == KConstant.METHOD_RING_URL){
+					Vector<KComment> newcomments = CommentFetcher.ringGetCommentsFromUrl(currentSearchInfo.getKeyword());
+					processNewComments(newcomments);
+				}
+				if(sf.getType() == KConstant.METHOD_RING_RSS){
+					Vector<KComment> newcomments = CommentFetcher.ringGetCommentsFromRSS(currentSearchInfo.getKeyword());
+					processNewComments(newcomments);
+				}
 				
 				
 			}
@@ -320,6 +328,9 @@ public class TweetFeelController {
 					}
 				}
 				drawChar(pos, neg, neu);
+			}
+			if(e.getActionCommand().equals(KConstant.ACTION_COMMAND_MANUAL_COMMENT)){
+				tfv.addCommentRow();
 			}
 		}
 	}

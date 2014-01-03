@@ -206,6 +206,30 @@ public class CommentFetcher {
 		return kComments;
 	}
 	
+	
+	// ring ring
+	public static Vector<KComment> ringGetCommentsFromUrl(String originUrl){
+		Vector<KComment> comments = getFacebookComment(originUrl);
+		return comments;
+	}
+	
+	public static Vector<KComment> ringGetCommentsFromRSS(String rssUrl){
+		Vector<KComment> kComments = new Vector<>();
+		try {
+			Vector<String> links = rsstolink(rssUrl);
+			for (String string : links) {
+				string =string.replaceFirst("m.", "");
+				kComments.addAll(ringGetCommentsFromUrl(string));
+			}
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return kComments;
+	}
+	
 	public static void main(String[] args) throws IOException, JSONException {
 //		zingGetCommentsFromUrl("http://news.zing.vn/Dan-truoc-2-ban-U19-Viet-Nam-thua-nguoc-HAGL-46-post380744.html");
 		zingGetCommentsFromRSS("http://news.zing.vn/rss/tin-moi.rss");
